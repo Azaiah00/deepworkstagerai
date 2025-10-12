@@ -1,22 +1,27 @@
 @import "tailwindcss";
 
+/* DeepWork AI Car Ad Studio Brand Colors */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --brand-primary: #1e293b;
+  --brand-secondary: #334155;
+  --brand-accent: #38bdf8;
+  --brand-light: #f1f5f9;
+  --brand-deep: #ef4444;
+  
+  --background: #1e293b;
+  --foreground: #f1f5f9;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-light: var(--brand-light);
+  --color-brand-deep: var(--brand-deep);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
