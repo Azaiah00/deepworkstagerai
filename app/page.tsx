@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function Home() {
   // State to store uploaded images and selections
+  const [projectName, setProjectName] = useState<string>('');
   const [carImage, setCarImage] = useState<string | null>(null);
   const [logoImage, setLogoImage] = useState<string | null>(null);
   const [selectedScenery, setSelectedScenery] = useState<string>('');
@@ -48,6 +50,11 @@ export default function Home() {
   // Handle submit to AI processing
   const handleSubmit = async () => {
     // Validate required fields
+    if (!projectName.trim()) {
+      alert('Please enter a project name!');
+      return;
+    }
+    
     if (!carImage) {
       alert('Please upload a car image first!');
       return;
@@ -64,6 +71,7 @@ export default function Home() {
     try {
       // Prepare form data to send to server
       const formData = {
+        projectName: projectName.trim(),
         carImage: carImage,
         logoImage: logoImage,
         scenery: selectedScenery,
@@ -87,6 +95,24 @@ export default function Home() {
       
       if (result.success && result.data.generatedImage) {
         setGeneratedImage(result.data.generatedImage);
+        
+        // Save project to localStorage for dashboard
+        const projectData = {
+          id: Date.now().toString(),
+          name: projectName.trim(),
+          scenery: selectedScenery,
+          sceneryName: sceneryOptions.find(s => s.id === selectedScenery)?.name,
+          generatedImage: result.data.generatedImage,
+          originalImage: carImage,
+          logoImage: logoImage,
+          createdAt: new Date().toISOString(),
+        };
+        
+        // Get existing projects and add new one
+        const existingProjects = JSON.parse(localStorage.getItem('carProjects') || '[]');
+        const updatedProjects = [projectData, ...existingProjects].slice(0, 20); // Keep last 20 projects
+        localStorage.setItem('carProjects', JSON.stringify(updatedProjects));
+        
         // Scroll to results section
         setTimeout(() => {
           document.getElementById('results-section')?.scrollIntoView({ behavior: 'smooth' });
@@ -104,21 +130,63 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#1e293b] text-[#f1f5f9] flex flex-col items-center justify-center p-8">
-      {/* Header */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-2">
-          DeepWork <span className="text-[#38bdf8]">AI</span> Car Ad Studio
-        </h1>
-        <p className="text-[#94a3b8] text-lg">
-          Upload your car image and logo to get started
-        </p>
+    <div className="min-h-screen bg-[#1e293b] text-[#f1f5f9]">
+      {/* Navigation Header */}
+      <div className="bg-[#334155] border-b border-[#475569]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <Link 
+              href="/"
+              className="text-2xl font-bold text-[#38bdf8] hover:text-[#0ea5e9] transition-colors"
+            >
+              DeepWork AI
+            </Link>
+            <Link
+              href="/dashboard"
+              className="px-4 py-2 bg-[#334155] hover:bg-[#475569] text-[#f1f5f9] 
+                font-semibold rounded-lg transition-colors border border-[#475569]"
+            >
+              📊 Dashboard
+            </Link>
+          </div>
+        </div>
       </div>
+
+      <div className="flex flex-col items-center justify-center p-8">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold mb-2">
+            Car Ad Studio
+          </h1>
+          <p className="text-[#94a3b8] text-lg">
+            Create professional car advertisements with AI
+          </p>
+        </div>
 
       {/* Upload Form Section */}
       <div className="bg-[#334155] rounded-2xl p-8 shadow-2xl max-w-2xl w-full">
         <div className="space-y-6">
           
+          {/* Project Name Input */}
+          <div>
+            <label 
+              htmlFor="project-name" 
+              className="block text-sm font-medium mb-2"
+            >
+              Project Name <span className="text-[#ef4444]">*</span>
+            </label>
+            <input
+              id="project-name"
+              type="text"
+              value={projectName}
+              onChange={(e) => setProjectName(e.target.value)}
+              placeholder="e.g., BMW X5 Luxury Ad"
+              className="w-full px-4 py-3 rounded-lg bg-[#1e293b] border-2 border-[#475569] 
+                text-[#f1f5f9] placeholder-[#94a3b8] focus:border-[#38bdf8] 
+                focus:outline-none transition-colors"
+            />
+          </div>
+
           {/* Car Image Upload Button */}
           <div>
             <label 
@@ -204,13 +272,26 @@ export default function Home() {
         </div>
 
         {/* Preview Box - Shows selected inputs before submission */}
-        {carImage && (
+        {projectName.trim() && carImage && (
           <div className="mt-6 pt-6 border-t border-[#475569]">
             <h3 className="text-lg font-semibold mb-4 text-[#f1f5f9]">
               📋 Review Your Selections
             </h3>
             
             <div className="bg-[#1e293b] rounded-lg p-4 space-y-4">
+              {/* Project Name Preview */}
+              <div className="flex items-center gap-4">
+                <div className="w-20 h-20 bg-[#334155] rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg className="w-8 h-8 text-[#38bdf8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-[#f1f5f9]">Project Name</p>
+                  <p className="text-xs text-[#38bdf8]">{projectName.trim()}</p>
+                </div>
+              </div>
+
               {/* Car Image Preview */}
               <div className="flex items-center gap-4">
                 <div className="relative w-20 h-20 bg-[#334155] rounded-lg overflow-hidden flex-shrink-0">
@@ -289,8 +370,8 @@ export default function Home() {
           </div>
         )}
 
-        {/* Submit Button - Only shows when car image is uploaded */}
-        {carImage && (
+        {/* Submit Button - Only shows when project name and car image are provided */}
+        {projectName.trim() && carImage && (
           <div className="mt-6">
             <button
               onClick={handleSubmit}
@@ -403,6 +484,7 @@ export default function Home() {
               <button
               onClick={() => {
                 setGeneratedImage(null);
+                setProjectName('');
                 setCarImage(null);
                 setLogoImage(null);
                 setSelectedScenery('');
@@ -452,6 +534,7 @@ export default function Home() {
           )}
         </div>
       )}
+      </div>
     </div>
   );
 }

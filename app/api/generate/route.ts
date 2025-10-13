@@ -60,12 +60,13 @@ export async function POST(request: NextRequest) {
   try {
     // Parse the incoming JSON data
     const body = await request.json();
-    const { carImage, logoImage, scenery } = body;
+    const { projectName, carImage, logoImage, scenery } = body;
 
     // Log request details
     console.log('='.repeat(50));
     console.log('🚀 NEW CAR AD GENERATION REQUEST');
     console.log('='.repeat(50));
+    console.log('Project Name:', projectName);
     console.log('Selected Scenery:', scenery);
 
     // Validate required fields
