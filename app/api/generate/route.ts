@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
   try {
     // Parse the incoming JSON data
     const body = await request.json();
-    const { projectName, carImage, logoImage, scenery } = body;
+    const { projectName, carImage, logoImage, scenery, customPrompt } = body;
 
     // Log request details
     console.log('='.repeat(50));
@@ -103,6 +103,11 @@ export async function POST(request: NextRequest) {
     // Add logo integration if provided
     if (logoImage) {
       prompt += ' SUBTLY integrate the provided logo into the background environment - place it on billboards, building signs, dealership signage, or as part of the setting where it looks natural and professional. The logo should enhance the branding without interfering with the car\'s authenticity or looking forced. Keep the logo integration subtle and environmental.';
+    }
+    
+    // Add custom user instructions if provided
+    if (customPrompt && customPrompt.trim()) {
+      prompt += ` IMPORTANT CUSTOM INSTRUCTIONS: ${customPrompt.trim()}. Please follow these specific instructions carefully while maintaining the core requirements above.`;
     }
     
     console.log('🎨 Generating image with Gemini...');
