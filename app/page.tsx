@@ -97,6 +97,7 @@ export default function Home() {
         setGeneratedImage(result.data.generatedImage);
         
         // Save project to localStorage for dashboard
+        // Note: We limit storage to avoid quota issues with large base64 images
         const projectData = {
           id: Date.now().toString(),
           name: projectName.trim(),
@@ -108,10 +109,22 @@ export default function Home() {
           createdAt: new Date().toISOString(),
         };
         
-        // Get existing projects and add new one
-        const existingProjects = JSON.parse(localStorage.getItem('carProjects') || '[]');
-        const updatedProjects = [projectData, ...existingProjects].slice(0, 20); // Keep last 20 projects
-        localStorage.setItem('carProjects', JSON.stringify(updatedProjects));
+        try {
+          // Get existing projects and add new one
+          const existingProjects = JSON.parse(localStorage.getItem('carProjects') || '[]');
+          // Keep only last 5 projects to avoid quota issues (base64 images are large)
+          const updatedProjects = [projectData, ...existingProjects].slice(0, 5);
+          localStorage.setItem('carProjects', JSON.stringify(updatedProjects));
+        } catch (storageError) {
+          // If storage is full, clear old projects and try again
+          console.warn('localStorage quota exceeded, clearing old projects...');
+          try {
+            localStorage.setItem('carProjects', JSON.stringify([projectData]));
+          } catch (e) {
+            console.error('Failed to save project to localStorage:', e);
+            // Don't block the UI if storage fails
+          }
+        }
         
         // Scroll to results section
         setTimeout(() => {
