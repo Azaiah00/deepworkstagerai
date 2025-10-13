@@ -214,24 +214,10 @@ export default function Studio() {
         </div>
       </div>
 
-      {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-[#0A0A0A] via-[#1F1F1F] to-[#0A0A0A]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center">
-            <h1 className="text-5xl md:text-7xl font-black mb-6 deepwork-gradient display-font">
-              AI Car Ad Studio
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Transform your car photos into professional advertisements with AI-powered scenery integration
-            </p>
-          </div>
-        </div>
-      </div>
-
       {/* Main Studio Form */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="glass-card premium-card rounded-3xl p-8 border border-[#DC2626]/20">
-          <form onSubmit={handleSubmit} className="space-y-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="glass-card premium-card rounded-3xl p-6 md:p-8 border border-[#DC2626]/20">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Project Name Input */}
             <div>
               <label 
@@ -253,11 +239,11 @@ export default function Studio() {
               />
             </div>
 
-            {/* Image Upload Section */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Image Upload Section - Compact with Previews */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Car Image Upload */}
               <div>
-                <label className="block text-sm font-semibold mb-3 text-gray-300 uppercase tracking-wider">
+                <label className="block text-sm font-semibold mb-2 text-gray-300 uppercase tracking-wider">
                   Car Image <span className="text-[#DC2626]">*</span>
                 </label>
                 <div className="relative">
@@ -265,65 +251,91 @@ export default function Studio() {
                     type="file"
                     accept="image/*"
                     onChange={handleCarImageUpload}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     required
                   />
-                  <div className="border-2 border-dashed border-gray-700 rounded-xl p-8 text-center 
-                    hover:border-[#DC2626] transition-all cursor-pointer bg-[#0A0A0A]/30 hover:bg-[#1F1F1F]/50">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#DC2626] to-[#B91C1C] 
-                      rounded-full flex items-center justify-center icon-glow">
-                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
+                  {carImage ? (
+                    <div className="relative border-2 border-[#DC2626] rounded-xl overflow-hidden group">
+                      <img 
+                        src={carImage} 
+                        alt="Car preview" 
+                        className="w-full h-48 object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <p className="text-white font-semibold">Click to change</p>
+                      </div>
                     </div>
-                    <p className="text-white font-semibold mb-2">Upload Car Image</p>
-                    <p className="text-sm text-gray-400">Click to browse or drag & drop</p>
-                  </div>
+                  ) : (
+                    <div className="border-2 border-dashed border-gray-700 rounded-xl p-6 text-center 
+                      hover:border-[#DC2626] transition-all cursor-pointer bg-[#0A0A0A]/30 hover:bg-[#1F1F1F]/50 h-48 flex flex-col items-center justify-center">
+                      <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-[#DC2626] to-[#B91C1C] 
+                        rounded-full flex items-center justify-center">
+                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <p className="text-white font-semibold text-sm mb-1">Upload Car Image</p>
+                      <p className="text-xs text-gray-400">Click or drag & drop</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
               {/* Logo Image Upload */}
               <div>
-                <label className="block text-sm font-semibold mb-3 text-gray-300 uppercase tracking-wider">
-                  Logo Image <span className="text-gray-500 text-xs normal-case">(Optional)</span>
+                <label className="block text-sm font-semibold mb-2 text-gray-300 uppercase tracking-wider">
+                  Logo <span className="text-gray-500 text-xs normal-case">(Optional)</span>
                 </label>
                 <div className="relative">
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handleLogoImageUpload}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   />
-                  <div className="border-2 border-dashed border-gray-700 rounded-xl p-8 text-center 
-                    hover:border-[#DC2626] transition-all cursor-pointer bg-[#0A0A0A]/30 hover:bg-[#1F1F1F]/50">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#38bdf8] to-[#0ea5e9] 
-                      rounded-full flex items-center justify-center icon-glow">
-                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-                      </svg>
+                  {logoImage ? (
+                    <div className="relative border-2 border-[#38bdf8] rounded-xl overflow-hidden group">
+                      <img 
+                        src={logoImage} 
+                        alt="Logo preview" 
+                        className="w-full h-48 object-contain bg-[#1F1F1F] p-4"
+                      />
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <p className="text-white font-semibold">Click to change</p>
+                      </div>
                     </div>
-                    <p className="text-white font-semibold mb-2">Upload Logo</p>
-                    <p className="text-sm text-gray-400">Click to browse or drag & drop</p>
-                  </div>
+                  ) : (
+                    <div className="border-2 border-dashed border-gray-700 rounded-xl p-6 text-center 
+                      hover:border-[#38bdf8] transition-all cursor-pointer bg-[#0A0A0A]/30 hover:bg-[#1F1F1F]/50 h-48 flex flex-col items-center justify-center">
+                      <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-[#38bdf8] to-[#0ea5e9] 
+                      rounded-full flex items-center justify-center">
+                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                        </svg>
+                      </div>
+                      <p className="text-white font-semibold text-sm mb-1">Upload Logo</p>
+                      <p className="text-xs text-gray-400">Click or drag & drop</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* Scenery Selection with Premium Cards */}
+            {/* Scenery Selection - Compact Grid */}
             <div>
-              <label className="block text-sm font-semibold mb-4 text-gray-300 uppercase tracking-wider">
+              <label className="block text-sm font-semibold mb-3 text-gray-300 uppercase tracking-wider">
                 Select Scenery <span className="text-[#DC2626]">*</span>
               </label>
-              <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {sceneryOptions.map((scenery, index) => (
                   <div
                     key={scenery.id}
                     onClick={() => setSelectedScenery(scenery.id)}
-                    className={`p-5 rounded-xl cursor-pointer transition-all duration-300 border-2 relative overflow-hidden
+                    className={`p-4 rounded-lg cursor-pointer transition-all duration-300 border-2 relative
                       ${selectedScenery === scenery.id
                         ? 'border-[#DC2626] bg-gradient-to-r from-[#DC2626]/10 to-[#B91C1C]/10 shadow-lg shadow-red-500/20'
                         : scenery.isPopular
-                          ? 'border-[#38bdf8] bg-gradient-to-r from-[#38bdf8]/10 to-[#38bdf8]/5 hover:border-[#38bdf8] hover:bg-gradient-to-r hover:from-[#38bdf8]/15 hover:to-[#38bdf8]/10 animate-pulse border-4'
+                          ? 'border-[#38bdf8] bg-gradient-to-r from-[#38bdf8]/10 to-[#38bdf8]/5 hover:border-[#38bdf8] animate-pulse'
                           : 'border-gray-700 hover:border-gray-600 bg-[#0A0A0A]/30 hover:bg-[#1F1F1F]/50'
                       }`}
                     style={{ animationDelay: `${index * 0.1}s` }}
@@ -337,18 +349,16 @@ export default function Studio() {
                       </div>
                     )}
                     
-                    <div className="flex items-center justify-between relative z-10">
-                      <div className={scenery.isPopular ? 'pr-20' : ''}>
-                        <p className={`font-bold text-lg ${scenery.isPopular ? 'text-[#38bdf8]' : 'text-white'}`}>
-                          {scenery.name}
-                        </p>
-                        <p className={`text-sm mt-1 ${scenery.isPopular ? 'text-[#38bdf8]/80' : 'text-gray-400'}`}>
-                          {scenery.description}
-                        </p>
-                      </div>
+                    <div className="relative z-10">
+                      <p className={`font-bold text-sm mb-1 ${scenery.isPopular ? 'text-[#38bdf8]' : 'text-white'}`}>
+                        {scenery.name}
+                      </p>
+                      <p className={`text-xs ${scenery.isPopular ? 'text-[#38bdf8]/80' : 'text-gray-400'}`}>
+                        {scenery.description}
+                      </p>
                       {selectedScenery === scenery.id && (
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#DC2626] to-[#B91C1C] flex items-center justify-center shadow-lg icon-glow">
-                          <svg className="w-5 h-5 text-white" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="currentColor">
+                        <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-gradient-to-r from-[#DC2626] to-[#B91C1C] flex items-center justify-center shadow-lg">
+                          <svg className="w-4 h-4 text-white" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="currentColor">
                             <path d="M5 13l4 4L19 7"></path>
                           </svg>
                         </div>
@@ -363,7 +373,7 @@ export default function Studio() {
             <div>
               <label 
                 htmlFor="custom-prompt" 
-                className="block text-sm font-semibold mb-3 text-gray-300 uppercase tracking-wider"
+                className="block text-sm font-semibold mb-2 text-gray-300 uppercase tracking-wider"
               >
                 Custom Instructions <span className="text-gray-500 text-xs normal-case">(Optional)</span>
               </label>
@@ -371,16 +381,13 @@ export default function Studio() {
                 id="custom-prompt"
                 value={customPrompt}
                 onChange={(e) => setCustomPrompt(e.target.value)}
-                placeholder="e.g., Make sure the logo says 'DeepWork' not 'DepWork', or add specific lighting effects, or focus on the car's front view..."
-                className="w-full px-5 py-4 rounded-xl bg-[#0A0A0A]/50 border-2 border-gray-700 
-                  text-white placeholder-gray-500 focus:border-[#DC2626] 
+                placeholder="e.g., Make sure the logo says 'DeepWork', add specific lighting effects..."
+                className="w-full px-4 py-3 rounded-lg bg-[#0A0A0A]/50 border-2 border-gray-700 
+                  text-white text-sm placeholder-gray-500 focus:border-[#DC2626] 
                   focus:outline-none transition-all focus:shadow-lg focus:shadow-red-500/20
-                  resize-none h-24"
+                  resize-none h-20"
                 maxLength={500}
               />
-              <p className="text-xs text-gray-500 mt-2">
-                Use this to give specific instructions for logo integration, text accuracy, or other customizations
-              </p>
             </div>
           </form>
 
@@ -563,7 +570,7 @@ export default function Studio() {
 
       {/* Display Uploaded Images with Premium Styling */}
       {(carImage || logoImage) && (
-        <div className="mt-16 max-w-5xl w-full reveal">
+        <div className="mt-16 max-w-5xl mx-auto w-full reveal">
           <div className="glass-card premium-card rounded-3xl p-8 border border-[#DC2626]/20">
             <h2 className="text-3xl font-bold text-center mb-8 deepwork-gradient display-font">
               Your Uploads
