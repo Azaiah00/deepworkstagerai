@@ -9,10 +9,12 @@ export default function Home() {
   const [logoImage, setLogoImage] = useState<string | null>(null);
   const [selectedScenery, setSelectedScenery] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
 
   // Available scenery options
   const sceneryOptions = [
     { id: 'luxury-showroom', name: 'Luxury Showroom', description: 'Modern dealership with elegant lighting' },
+    { id: 'clean-studio', name: 'Clean Studio', description: 'Minimalist high-end studio setting' },
     { id: 'sunset-beach', name: 'Sunset Beach', description: 'Golden hour by the ocean' },
     { id: 'mountain-road', name: 'Mountain Road', description: 'Scenic winding mountain pass' },
     { id: 'urban-skyline', name: 'Urban Skyline', description: 'Downtown city at night' },
@@ -82,7 +84,16 @@ export default function Home() {
 
       const result = await response.json();
       console.log('Server response:', result);
-      alert('Form submitted successfully! Check the server console for logs.');
+      
+      if (result.success && result.data.generatedImage) {
+        setGeneratedImage(result.data.generatedImage);
+        // Scroll to results section
+        setTimeout(() => {
+          document.getElementById('results-section')?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      } else {
+        alert('Image generated but no data received. Please try again.');
+      }
       
     } catch (error) {
       console.error('Error:', error);
@@ -350,6 +361,95 @@ export default function Home() {
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Generated Image Results Section */}
+      {generatedImage && (
+        <div id="results-section" className="mt-16 max-w-6xl w-full">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-2">
+              ✨ Your Professional Car Ad
+            </h2>
+            <p className="text-[#94a3b8] text-lg">
+              AI-transformed with {sceneryOptions.find(s => s.id === selectedScenery)?.name} scenery
+            </p>
+          </div>
+
+          {/* Generated Image Display */}
+          <div className="bg-[#334155] rounded-2xl p-6 shadow-2xl">
+            <div className="relative w-full aspect-video bg-[#1e293b] rounded-xl overflow-hidden">
+          <Image
+                src={generatedImage}
+                alt="AI Generated Car Advertisement"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="mt-6 flex gap-4 justify-center flex-wrap">
+              <a
+                href={generatedImage}
+                download="car-ad-professional.png"
+                className="px-6 py-3 bg-[#38bdf8] hover:bg-[#0ea5e9] text-[#1e293b] 
+                  font-semibold rounded-lg transition-all duration-300 
+                  hover:scale-105 active:scale-95 shadow-lg"
+              >
+                📥 Download Image
+              </a>
+              
+              <button
+              onClick={() => {
+                setGeneratedImage(null);
+                setCarImage(null);
+                setLogoImage(null);
+                setSelectedScenery('');
+              }}
+                className="px-6 py-3 bg-[#334155] hover:bg-[#475569] text-[#f1f5f9] 
+                  font-semibold rounded-lg transition-all duration-300 
+                  hover:scale-105 active:scale-95 border-2 border-[#475569]"
+              >
+                🔄 Create Another
+              </button>
+            </div>
+          </div>
+
+          {/* Before/After Comparison */}
+          {carImage && (
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Before */}
+              <div className="bg-[#334155] rounded-xl p-4">
+                <p className="text-sm font-medium mb-3 text-[#94a3b8] text-center">
+                  Before (Original)
+                </p>
+                <div className="relative w-full h-48 bg-[#1e293b] rounded-lg overflow-hidden">
+          <Image
+                    src={carImage}
+                    alt="Original car"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              </div>
+
+              {/* After */}
+              <div className="bg-[#334155] rounded-xl p-4 border-2 border-[#38bdf8]">
+                <p className="text-sm font-medium mb-3 text-[#38bdf8] text-center">
+                  After (AI Enhanced)
+                </p>
+                <div className="relative w-full h-48 bg-[#1e293b] rounded-lg overflow-hidden">
+          <Image
+                    src={generatedImage}
+                    alt="AI enhanced car"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
