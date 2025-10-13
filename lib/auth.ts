@@ -1,24 +1,14 @@
 import { betterAuth } from "better-auth";
-import Database from "better-sqlite3";
-import { existsSync, mkdirSync } from "fs";
-import { dirname } from "path";
+import { Pool } from "pg";
 
-// Create database instance
-// In production (Netlify), use /tmp directory for writable storage
-const dbPath = process.env.NODE_ENV === "production" 
-  ? "/tmp/auth.db" 
-  : "./auth.db";
-
-// Ensure the directory exists (only needed for production /tmp path)
-if (process.env.NODE_ENV === "production") {
-  const dbDir = dirname(dbPath);
-  if (!existsSync(dbDir)) {
-    mkdirSync(dbDir, { recursive: true });
-  }
-}
+// Create PostgreSQL connection pool
+// Use Neon (or any PostgreSQL) connection string
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
 export const auth = betterAuth({
-  database: new Database(dbPath),
+  database: pool,
   secret: process.env.BETTER_AUTH_SECRET!,
   baseURL: process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   emailAndPassword: {
