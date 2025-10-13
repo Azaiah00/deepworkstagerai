@@ -54,7 +54,7 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
               <Link
-                href="/studio"
+                href="/login"
                 className="px-12 py-6 bg-gradient-to-r from-[#DC2626] to-[#B91C1C] text-white 
                   text-xl font-bold rounded-full transition-all hover:shadow-2xl hover:shadow-red-500/50 
                   hover:scale-105 active:scale-95 flex items-center gap-3"
