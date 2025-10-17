@@ -113,7 +113,7 @@ export default function PlatformLayout({ children, title, subtitle }: PlatformLa
   const isActive = (href: string) => pathname === href;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0A0A0A] via-[#1F1F1F] to-[#0A0A0A] w-full overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#0A0A0A] via-[#1F1F1F] to-[#0A0A0A] w-full overflow-x-hidden flex">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div 
@@ -229,7 +229,7 @@ export default function PlatformLayout({ children, title, subtitle }: PlatformLa
       </div>
 
       {/* Main Content */}
-      <div className="lg:ml-64">
+      <div className="flex-1 lg:ml-0">
         {/* Top Header */}
         <header className="bg-gradient-to-r from-[#0A0A0A] via-[#1F1F1F] to-[#0A0A0A] border-b border-[#DC2626]/20">
           <div className="px-4 sm:px-6 py-3 sm:py-4">
