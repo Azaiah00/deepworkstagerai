@@ -44,48 +44,48 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#0A0A0A] via-[#1F1F1F] to-[#0A0A0A]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-24">
           <div className="text-center">
-            <div className="inline-block mb-6">
-              <span className="px-6 py-2 bg-gradient-to-r from-[#DC2626]/20 to-[#38bdf8]/20 border border-[#DC2626]/50 rounded-full text-sm font-bold text-white uppercase tracking-wider">
+            <div className="inline-block mb-4 sm:mb-6">
+              <span className="px-4 py-2 sm:px-6 bg-gradient-to-r from-[#DC2626]/20 to-[#38bdf8]/20 border border-[#DC2626]/50 rounded-full text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
                 All-in-One Automotive Sales Platform
               </span>
             </div>
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-8 deepwork-gradient display-font leading-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black mb-6 sm:mb-8 deepwork-gradient display-font leading-tight px-2">
               Sell More Cars with<br />AI-Powered Automation
             </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mb-6 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-4 sm:mb-6 max-w-4xl mx-auto leading-relaxed px-4">
               The complete platform for modern auto dealers: Professional AI staging, intelligent CRM, automated social media, and AI sales assistant—all working together to close more deals faster.
             </p>
-            <p className="text-lg text-[#38bdf8] mb-12 max-w-3xl mx-auto font-semibold">
+            <p className="text-base sm:text-lg text-[#38bdf8] mb-8 sm:mb-12 max-w-3xl mx-auto font-semibold px-4">
               Transform your dealership operations and increase sales by up to 300% with automated marketing and AI-driven lead management
             </p>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center px-4">
               <Link
                 href="/login"
-                className="px-12 py-6 bg-gradient-to-r from-[#DC2626] to-[#B91C1C] text-white 
-                  text-xl font-bold rounded-full transition-all hover:shadow-2xl hover:shadow-red-500/50 
-                  hover:scale-105 active:scale-95 flex items-center gap-3"
+                className="w-full sm:w-auto px-8 sm:px-12 py-4 sm:py-6 bg-gradient-to-r from-[#DC2626] to-[#B91C1C] text-white 
+                  text-lg sm:text-xl font-bold rounded-full transition-all hover:shadow-2xl hover:shadow-red-500/50 
+                  hover:scale-105 active:scale-95 flex items-center justify-center gap-3"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
                 <span>Start Free Trial</span>
               </Link>
               <Link
                 href="#features"
-                className="px-12 py-6 bg-[#1F1F1F] hover:bg-[#2a2a2a] text-white 
-                  text-xl font-bold rounded-full transition-all hover:shadow-2xl 
+                className="w-full sm:w-auto px-8 sm:px-12 py-4 sm:py-6 bg-[#1F1F1F] hover:bg-[#2a2a2a] text-white 
+                  text-lg sm:text-xl font-bold rounded-full transition-all hover:shadow-2xl 
                   hover:scale-105 active:scale-95 border-2 border-gray-700 hover:border-gray-600
-                  flex items-center gap-3"
+                  flex items-center justify-center gap-3"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
                 <span>See How It Works</span>
               </Link>
             </div>
-            <p className="text-sm text-gray-500 mt-6">
+            <p className="text-xs sm:text-sm text-gray-500 mt-4 sm:mt-6 px-4">
               No credit card required • Set up in 5 minutes • Cancel anytime
             </p>
           </div>
@@ -93,13 +93,13 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-24 bg-gradient-to-b from-[#1F1F1F] to-[#0A0A0A]">
+      <section id="features" className="py-12 sm:py-24 bg-gradient-to-b from-[#1F1F1F] to-[#0A0A0A]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl md:text-6xl font-black mb-6 deepwork-gradient display-font">
+          <div className="text-center mb-12 sm:mb-20">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6 deepwork-gradient display-font px-2">
               Everything You Need to Dominate Auto Sales
             </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            <p className="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto px-4">
               A complete suite of AI-powered tools designed specifically for high-performing auto dealerships
             </p>
           </div>
@@ -193,13 +193,13 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-24 bg-gradient-to-b from-[#0A0A0A] to-[#1F1F1F]">
+      <section className="py-12 sm:py-24 bg-gradient-to-b from-[#0A0A0A] to-[#1F1F1F]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl md:text-6xl font-black mb-6 deepwork-gradient display-font">
+          <div className="text-center mb-12 sm:mb-20">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6 deepwork-gradient display-font px-2">
               From Inventory to Sale in 3 Simple Steps
             </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            <p className="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto px-4">
               Set up your entire sales operation in minutes and start closing more deals today
             </p>
           </div>
@@ -274,44 +274,44 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-br from-[#DC2626]/10 via-[#1F1F1F] to-[#38bdf8]/10">
+      <section className="py-12 sm:py-24 bg-gradient-to-br from-[#DC2626]/10 via-[#1F1F1F] to-[#38bdf8]/10">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="glass-card premium-card rounded-3xl p-12 text-center border border-[#DC2626]/30">
+          <div className="glass-card premium-card rounded-3xl p-6 sm:p-12 text-center border border-[#DC2626]/30">
             <div className="inline-block mb-6">
               <span className="px-6 py-2 bg-gradient-to-r from-[#10B981]/20 to-[#059669]/20 border border-[#10B981]/50 rounded-full text-sm font-bold text-[#10B981] uppercase tracking-wider">
                 Limited Time Offer
               </span>
             </div>
-            <h2 className="text-4xl md:text-6xl font-black mb-6 deepwork-gradient display-font">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6 deepwork-gradient display-font px-2">
               Join Elite Dealers Selling 3x More Cars
             </h2>
-            <p className="text-xl text-gray-300 mb-4 leading-relaxed max-w-3xl mx-auto">
+            <p className="text-lg sm:text-xl text-gray-300 mb-3 sm:mb-4 leading-relaxed max-w-3xl mx-auto px-2">
               Stop losing leads to competitors with better marketing. Start leveraging AI-powered automation to dominate your market and maximize every opportunity.
             </p>
-            <p className="text-lg text-[#38bdf8] mb-10 font-semibold">
+            <p className="text-base sm:text-lg text-[#38bdf8] mb-8 sm:mb-10 font-semibold px-2">
               Over 500 dealerships have increased their monthly sales by an average of 156% using DeepWork AI
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-8">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center mb-6 sm:mb-8 px-4">
               <Link
                 href="/login"
-                className="px-12 py-6 bg-gradient-to-r from-[#DC2626] to-[#B91C1C] text-white 
-                  text-xl font-bold rounded-full transition-all hover:shadow-2xl hover:shadow-red-500/50 
-                  hover:scale-105 active:scale-95 flex items-center gap-3"
+                className="w-full sm:w-auto px-8 sm:px-12 py-4 sm:py-6 bg-gradient-to-r from-[#DC2626] to-[#B91C1C] text-white 
+                  text-lg sm:text-xl font-bold rounded-full transition-all hover:shadow-2xl hover:shadow-red-500/50 
+                  hover:scale-105 active:scale-95 flex items-center justify-center gap-3"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
                 <span>Start Your Free Trial</span>
               </Link>
               <Link
                 href="#features"
-                className="px-12 py-6 bg-[#1F1F1F] hover:bg-[#2a2a2a] text-white 
-                  text-xl font-bold rounded-full transition-all hover:shadow-2xl 
+                className="w-full sm:w-auto px-8 sm:px-12 py-4 sm:py-6 bg-[#1F1F1F] hover:bg-[#2a2a2a] text-white 
+                  text-lg sm:text-xl font-bold rounded-full transition-all hover:shadow-2xl 
                   hover:scale-105 active:scale-95 border-2 border-gray-700 hover:border-gray-600
-                  flex items-center gap-3"
+                  flex items-center justify-center gap-3"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                 </svg>
                 <span>Watch Demo</span>

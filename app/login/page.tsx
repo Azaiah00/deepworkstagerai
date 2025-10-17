@@ -85,20 +85,20 @@ export default function Login() {
       {/* Navigation Header */}
       <nav className="bg-gradient-to-r from-[#0A0A0A] via-[#1F1F1F] to-[#0A0A0A] border-b border-[#DC2626]/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
+          <div className="flex items-center justify-between h-16 sm:h-20">
             <Link 
               href="/"
-              className="text-3xl font-bold deepwork-gradient hover:scale-105 transition-transform display-font"
+              className="text-2xl sm:text-3xl font-bold deepwork-gradient hover:scale-105 transition-transform display-font"
             >
               DeepWork AI
             </Link>
             <Link
               href="/"
-              className="px-6 py-3 bg-[#1F1F1F] hover:bg-[#2a2a2a] text-white 
+              className="px-4 py-2 sm:px-6 sm:py-3 bg-[#1F1F1F] hover:bg-[#2a2a2a] text-white 
                 font-semibold rounded-full transition-all hover:shadow-lg 
-                hover:-translate-y-0.5 flex items-center gap-2"
+                hover:-translate-y-0.5 flex items-center gap-2 text-sm sm:text-base"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
               </svg>
               <span>Home</span>
@@ -111,11 +111,11 @@ export default function Login() {
       <div className="flex items-center justify-center min-h-[calc(100vh-80px)] py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           {/* Header */}
-          <div className="text-center">
-            <h2 className="text-4xl font-black deepwork-gradient display-font mb-4">
+          <div className="text-center px-2">
+            <h2 className="text-3xl sm:text-4xl font-black deepwork-gradient display-font mb-3 sm:mb-4">
               {isLogin ? 'Welcome Back' : 'Create Account'}
             </h2>
-            <p className="text-gray-300 text-lg">
+            <p className="text-gray-300 text-base sm:text-lg">
               {isLogin 
                 ? 'Sign in to access your automotive sales platform' 
                 : 'Join DeepWork AI and start creating professional car advertisements'
