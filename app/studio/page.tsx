@@ -112,6 +112,7 @@ export default function Studio() {
             headers: {
               'Content-Type': 'application/json',
             },
+            credentials: 'include', // Ensure cookies are sent with the request
             body: JSON.stringify({
               title: projectName.trim(),
               carImageUrl: carImage,
@@ -124,7 +125,9 @@ export default function Studio() {
           });
 
           if (!saveResponse.ok) {
-            console.error('Failed to save project to database');
+            const errorData = await saveResponse.json().catch(() => ({}));
+            console.error('Failed to save project to database:', saveResponse.status, errorData);
+            alert('Warning: Project generated but not saved to your account. Please ensure you are logged in.');
           } else {
             console.log('Project saved to database successfully');
           }

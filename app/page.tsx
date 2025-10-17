@@ -3,39 +3,40 @@ import Image from 'next/image';
 
 export default function Home() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen w-full overflow-x-hidden">
       {/* Navigation Header */}
-      <nav className="bg-gradient-to-r from-[#0A0A0A] via-[#1F1F1F] to-[#0A0A0A] border-b border-[#DC2626]/20">
+      <nav className="bg-gradient-to-r from-[#0A0A0A] via-[#1F1F1F] to-[#0A0A0A] border-b border-[#DC2626]/20 w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
+          <div className="flex items-center justify-between h-16 sm:h-20 gap-2">
             <Link 
               href="/"
-              className="text-3xl font-bold deepwork-gradient hover:scale-105 transition-transform display-font"
+              className="text-xl sm:text-2xl md:text-3xl font-bold deepwork-gradient hover:scale-105 transition-transform display-font whitespace-nowrap"
             >
               DeepWork AI
             </Link>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <Link
                 href="/login"
-                className="px-6 py-3 bg-[#1F1F1F] hover:bg-[#2a2a2a] text-white 
-                  font-semibold rounded-full transition-all hover:shadow-lg 
-                  hover:-translate-y-0.5 flex items-center gap-2"
+                className="px-3 py-2 sm:px-6 sm:py-3 bg-[#1F1F1F] hover:bg-[#2a2a2a] text-white 
+                  text-sm sm:text-base font-semibold rounded-full transition-all hover:shadow-lg 
+                  hover:-translate-y-0.5 flex items-center gap-2 whitespace-nowrap"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                 </svg>
-                <span>Login</span>
+                <span className="hidden sm:inline">Login</span>
               </Link>
               <Link
-                href="/studio"
-                className="px-6 py-3 bg-gradient-to-r from-[#DC2626] to-[#B91C1C] text-white 
-                  font-semibold rounded-full transition-all hover:shadow-lg hover:shadow-red-500/50 
-                  hover:-translate-y-0.5 flex items-center gap-2"
+                href="/login"
+                className="px-3 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-[#DC2626] to-[#B91C1C] text-white 
+                  text-sm sm:text-base font-semibold rounded-full transition-all hover:shadow-lg hover:shadow-red-500/50 
+                  hover:-translate-y-0.5 flex items-center gap-2 whitespace-nowrap"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-                <span>Start Creating</span>
+                <span className="hidden sm:inline">Start Creating</span>
+                <span className="sm:hidden">Start</span>
               </Link>
             </div>
           </div>
@@ -43,7 +44,7 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#0A0A0A] via-[#1F1F1F] to-[#0A0A0A]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#0A0A0A] via-[#1F1F1F] to-[#0A0A0A] w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-24">
           <div className="text-center">
             <div className="inline-block mb-4 sm:mb-6">
@@ -93,7 +94,7 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-12 sm:py-24 bg-gradient-to-b from-[#1F1F1F] to-[#0A0A0A]">
+      <section id="features" className="py-12 sm:py-24 bg-gradient-to-b from-[#1F1F1F] to-[#0A0A0A] w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 sm:mb-20">
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6 deepwork-gradient display-font px-2">
@@ -193,7 +194,7 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-12 sm:py-24 bg-gradient-to-b from-[#0A0A0A] to-[#1F1F1F]">
+      <section className="py-12 sm:py-24 bg-gradient-to-b from-[#0A0A0A] to-[#1F1F1F] w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 sm:mb-20">
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6 deepwork-gradient display-font px-2">
@@ -274,7 +275,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-12 sm:py-24 bg-gradient-to-br from-[#DC2626]/10 via-[#1F1F1F] to-[#38bdf8]/10">
+      <section className="py-12 sm:py-24 bg-gradient-to-br from-[#DC2626]/10 via-[#1F1F1F] to-[#38bdf8]/10 w-full">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="glass-card premium-card rounded-3xl p-6 sm:p-12 text-center border border-[#DC2626]/30">
             <div className="inline-block mb-6">
@@ -353,7 +354,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#0A0A0A] border-t border-[#DC2626]/20 py-16">
+      <footer className="bg-[#0A0A0A] border-t border-[#DC2626]/20 py-16 w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             {/* Brand Column */}
