@@ -229,23 +229,23 @@ export default function PlatformLayout({ children, title, subtitle }: PlatformLa
       </div>
 
       {/* Main Content */}
-      <div className="lg:ml-64 flex flex-col min-h-screen">
+      <div className="lg:ml-64">
         {/* Top Header */}
         <header className="bg-gradient-to-r from-[#0A0A0A] via-[#1F1F1F] to-[#0A0A0A] border-b border-[#DC2626]/20">
-          <div className="px-4 sm:px-6 py-4">
-            <div className="flex items-center justify-between">
+          <div className="px-4 sm:px-6 py-3 sm:py-4">
+            <div className="flex items-center justify-between w-full">
               {/* Left side - Toggle and Title */}
-              <div className="flex items-center gap-3 sm:gap-4">
+              <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
                 <button
                   onClick={() => setSidebarOpen(!sidebarOpen)}
-                  className="p-2 rounded-lg bg-[#1F1F1F] hover:bg-[#2F2F2F] text-white transition-colors lg:hidden"
+                  className="p-2 rounded-lg bg-[#1F1F1F] hover:bg-[#2F2F2F] text-white transition-colors lg:hidden flex-shrink-0"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                   </svg>
                 </button>
                 {title && (
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-white truncate">{title}</h1>
                     {subtitle && (
                       <p className="text-gray-400 text-xs sm:text-sm truncate">{subtitle}</p>
@@ -255,19 +255,19 @@ export default function PlatformLayout({ children, title, subtitle }: PlatformLa
               </div>
 
               {/* Right side - User menu */}
-              <div className="flex items-center gap-2 sm:gap-4">
+              <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                 {/* User profile */}
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="w-8 h-8 bg-gradient-to-br from-[#DC2626] to-[#B91C1C] rounded-full flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-[#DC2626] to-[#B91C1C] rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-white font-bold text-xs sm:text-sm">
                       {session?.user?.name?.charAt(0) || 'U'}
                     </span>
                   </div>
                   <div className="hidden sm:block">
-                    <p className="text-white text-sm font-semibold truncate">
+                    <p className="text-white text-sm font-semibold truncate max-w-24">
                       {session?.user?.name || 'User'}
                     </p>
-                    <p className="text-gray-400 text-xs truncate">
+                    <p className="text-gray-400 text-xs truncate max-w-24">
                       {session?.user?.email}
                     </p>
                   </div>
@@ -279,9 +279,9 @@ export default function PlatformLayout({ children, title, subtitle }: PlatformLa
                     await authClient.signOut();
                     router.push('/');
                   }}
-                  className="p-2 text-gray-400 hover:text-white transition-colors"
+                  className="p-1.5 sm:p-2 text-gray-400 hover:text-white transition-colors flex-shrink-0"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                   </svg>
                 </button>
@@ -291,7 +291,7 @@ export default function PlatformLayout({ children, title, subtitle }: PlatformLa
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-4 sm:p-6 overflow-x-hidden">
+        <main className="p-4 sm:p-6 overflow-x-hidden">
           {children}
         </main>
       </div>

@@ -230,16 +230,16 @@ export default function LeadsPage() {
     >
       <div className="max-w-7xl mx-auto">
         {/* Title and Quick Actions */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="text-center flex-1">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 display-font">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 gap-4">
+          <div className="text-center sm:text-left flex-1">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-4 display-font">
               Lead <span className="gradient-text">Management</span>
             </h2>
-            <p className="text-gray-400 text-lg">Track and nurture your customer relationships</p>
+            <p className="text-gray-400 text-base sm:text-lg">Track and nurture your customer relationships</p>
           </div>
           <button
             onClick={() => setIsAddingLead(true)}
-            className="btn-premium px-6 py-3 flex items-center gap-2 ml-8"
+            className="btn-premium px-4 sm:px-6 py-3 flex items-center justify-center gap-2 w-full sm:w-auto"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
               <path fillRule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clipRule="evenodd" />
@@ -249,7 +249,7 @@ export default function LeadsPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 mb-8">
           <div className="glass-card premium-card rounded-2xl p-6 border border-[#DC2626]/20">
             <p className="text-3xl font-black text-white mb-1">{leads.length}</p>
             <p className="text-sm text-gray-400">Total Leads</p>
