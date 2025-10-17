@@ -9,7 +9,7 @@ import { headers } from 'next/headers';
 // GET - Retrieve a specific lead
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get the current session from Better Auth
@@ -25,7 +25,7 @@ export async function GET(
       );
     }
 
-    const leadId = params.id;
+    const { id: leadId } = await params;
 
     // Fetch the lead
     const lead = await prisma.lead.findFirst({
@@ -55,7 +55,7 @@ export async function GET(
 // PATCH - Update a specific lead
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get the current session from Better Auth
@@ -71,7 +71,7 @@ export async function PATCH(
       );
     }
 
-    const leadId = params.id;
+    const { id: leadId } = await params;
 
     // Verify the lead belongs to the user
     const existingLead = await prisma.lead.findFirst({
@@ -139,7 +139,7 @@ export async function PATCH(
 // DELETE - Delete a specific lead
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get the current session from Better Auth
@@ -155,7 +155,7 @@ export async function DELETE(
       );
     }
 
-    const leadId = params.id;
+    const { id: leadId } = await params;
 
     // Verify the lead belongs to the user before deleting
     const lead = await prisma.lead.findFirst({

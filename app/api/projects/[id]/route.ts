@@ -9,7 +9,7 @@ import { headers } from 'next/headers';
 // DELETE - Delete a specific project
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get the current session from Better Auth
@@ -25,7 +25,7 @@ export async function DELETE(
       );
     }
 
-    const projectId = params.id;
+    const { id: projectId } = await params;
 
     // Verify the project belongs to the user before deleting
     const project = await prisma.stagingProject.findFirst({

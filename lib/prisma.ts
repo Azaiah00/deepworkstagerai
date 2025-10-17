@@ -1,4 +1,4 @@
-// Prisma Client singleton for database access
+ks // Prisma Client singleton for database access
 // This ensures we only have one Prisma instance throughout the app
 
 import { PrismaClient } from '@prisma/client';
