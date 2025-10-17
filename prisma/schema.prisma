@@ -1,0 +1,273 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// USER & AUTHENTICATION (Better Auth)
+// ============================================================================
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  name          String?
+  image         String?
+  company       String?
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  // Better Auth relations
+  account account[]
+  session session[]
+
+  // Platform relations
+  leads           Lead[]
+  stagingProjects StagingProject[]
+  socialPosts     SocialPost[]
+  integrations    Integration[]
+  analyticsLogs   AnalyticsLog[]
+  subscription    Subscription?
+
+  @@map("user")
+}
+
+model account {
+  id                    String    @id
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  expiresAt             DateTime? @db.Timestamp(6)
+  password              String?
+  createdAt             DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt             DateTime  @default(now()) @db.Timestamp(6)
+  accessTokenExpiresAt  DateTime? @db.Timestamp(6)
+  refreshTokenExpiresAt DateTime? @db.Timestamp(6)
+  scope                 String?
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime @db.Timestamp(6)
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
+  token     String?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime @db.Timestamp(6)
+  createdAt  DateTime @default(now()) @db.Timestamp(6)
+  updatedAt  DateTime @default(now()) @db.Timestamp(6)
+}
+
+// ============================================================================
+// CRM - LEADS & CONVERSATIONS
+// ============================================================================
+
+model Lead {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Contact information
+  name    String
+  email   String?
+  phone   String?
+  company String?
+
+  // Lead tracking
+  source   String @default("manual") // "website", "social", "referral", "manual"
+  status   String @default("new") // "new", "contacted", "qualified", "negotiating", "won", "lost"
+  priority String @default("medium") // "low", "medium", "high"
+
+  // AI conversation history (stored as JSON)
+  conversationHistory Json      @default("[]")
+  lastContactedAt     DateTime?
+  nextFollowUpAt      DateTime?
+
+  // Metadata
+  tags           String[] @default([])
+  notes          String?
+  estimatedValue Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([nextFollowUpAt])
+}
+
+// ============================================================================
+// CAR STAGING PROJECTS
+// ============================================================================
+
+model StagingProject {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Project details
+  title        String  @default("Untitled Project")
+  carImageUrl  String
+  logoImageUrl String?
+  scenery      String
+  customPrompt String?
+
+  // Generated result
+  generatedImageUrl String?
+  status            String  @default("pending") // "pending", "processing", "completed", "failed"
+
+  // Auto-posting status
+  autoPostEnabled Boolean @default(false)
+  postedToWebsite Boolean @default(false)
+  postedToSocial  Boolean @default(false)
+
+  // Metadata
+  tags  String[] @default([])
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// SOCIAL MEDIA AUTOMATION
+// ============================================================================
+
+model SocialPost {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Content
+  platform String // "facebook", "linkedin", "instagram", "twitter"
+  content  String // AI-generated post text
+  imageUrl String? // Link to staged car image
+
+  // Scheduling
+  scheduledFor DateTime?
+  postedAt     DateTime?
+  status       String    @default("draft") // "draft", "scheduled", "posted", "failed"
+
+  // Engagement metrics
+  likes       Int @default(0)
+  comments    Int @default(0)
+  shares      Int @default(0)
+  impressions Int @default(0)
+
+  // External reference
+  externalPostId String? // Post ID from social platform
+  errorMessage   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([platform])
+  @@index([status])
+  @@index([scheduledFor])
+}
+
+// ============================================================================
+// INTEGRATIONS (API Keys & Credentials)
+// ============================================================================
+
+model Integration {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Integration type
+  platform String // "facebook", "linkedin", "instagram", "twitter", "website", "twilio", "openai"
+
+  // Credentials (encrypted in production)
+  credentials Json // Store API keys, tokens, etc. as JSON
+
+  // Status
+  isActive     Boolean   @default(true)
+  lastVerified DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, platform])
+  @@index([userId])
+}
+
+// ============================================================================
+// ANALYTICS & TRACKING
+// ============================================================================
+
+model AnalyticsLog {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Event tracking
+  eventType String // "staging_created", "lead_added", "post_published", "ai_interaction"
+  eventData Json   @default("{}")
+
+  // Metadata
+  ipAddress String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([eventType])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// SUBSCRIPTIONS & BILLING (Future feature)
+// ============================================================================
+
+model Subscription {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Plan details
+  plan   String @default("free") // "free", "pro", "enterprise"
+  status String @default("active") // "active", "cancelled", "past_due"
+
+  // Usage limits
+  stagingLimit    Int @default(10) // Stagings per month
+  leadLimit       Int @default(50) // CRM leads
+  socialPostLimit Int @default(20) // Social posts per month
+
+  // Current usage
+  stagingUsed    Int @default(0)
+  leadUsed       Int @default(0)
+  socialPostUsed Int @default(0)
+
+  // Billing
+  currentPeriodStart DateTime @default(now())
+  currentPeriodEnd   DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}

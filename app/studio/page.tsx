@@ -5,17 +5,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
+import PlatformLayout from '@/components/PlatformLayout';
 
 export default function Studio() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!isPending && !session) {
-      router.push('/login');
-    }
-  }, [session, isPending, router]);
+  // Authentication is now handled by PlatformLayout
   // State to store uploaded images and selections
   const [projectName, setProjectName] = useState<string>('');
   const [carImage, setCarImage] = useState<string | null>(null);
@@ -109,34 +105,32 @@ export default function Studio() {
       if (result.success && result.data.generatedImage) {
         setGeneratedImage(result.data.generatedImage);
         
-        // Save project to localStorage for dashboard
-        // Note: We limit storage to avoid quota issues with large base64 images
-        const projectData = {
-          id: Date.now().toString(),
-          name: projectName.trim(),
-          scenery: selectedScenery,
-          sceneryName: sceneryOptions.find(s => s.id === selectedScenery)?.name,
-          generatedImage: result.data.generatedImage,
-          originalImage: carImage,
-          logoImage: logoImage,
-          createdAt: new Date().toISOString(),
-        };
-        
+        // Save project to database for dashboard and future features
         try {
-          // Get existing projects and add new one
-          const existingProjects = JSON.parse(localStorage.getItem('carProjects') || '[]');
-          // Keep only last 5 projects to avoid quota issues (base64 images are large)
-          const updatedProjects = [projectData, ...existingProjects].slice(0, 5);
-          localStorage.setItem('carProjects', JSON.stringify(updatedProjects));
-        } catch (storageError) {
-          // If storage is full, clear old projects and try again
-          console.warn('localStorage quota exceeded, clearing old projects...');
-          try {
-            localStorage.setItem('carProjects', JSON.stringify([projectData]));
-          } catch (e) {
-            console.error('Failed to save project to localStorage:', e);
-            // Don't block the UI if storage fails
+          const saveResponse = await fetch('/api/projects', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              title: projectName.trim(),
+              carImageUrl: carImage,
+              logoImageUrl: logoImage,
+              scenery: selectedScenery,
+              customPrompt: customPrompt.trim() || null,
+              generatedImageUrl: result.data.generatedImage,
+              status: 'completed'
+            }),
+          });
+
+          if (!saveResponse.ok) {
+            console.error('Failed to save project to database');
+          } else {
+            console.log('Project saved to database successfully');
           }
+        } catch (saveError) {
+          console.error('Error saving project to database:', saveError);
+          // Don't block the UI if database save fails
         }
 
         // Scroll to results section

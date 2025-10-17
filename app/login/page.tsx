@@ -25,7 +25,7 @@ export default function Login() {
       setError('');
       await authClient.signIn.social({
         provider: 'google',
-        callbackURL: '/studio',
+        callbackURL: '/leads',
       });
     } catch (err: any) {
       console.error('Google login error:', err);
@@ -47,7 +47,7 @@ export default function Login() {
           email: formData.email,
           password: formData.password,
         });
-        router.push('/studio');
+        router.push('/leads');
       } else {
         // Sign up
         if (formData.password !== formData.confirmPassword) {
@@ -63,7 +63,7 @@ export default function Login() {
           // @ts-ignore - company is a custom field
           company: formData.company,
         });
-        router.push('/studio');
+        router.push('/leads');
       }
     } catch (err: any) {
       console.error('Auth error:', err);
@@ -117,7 +117,7 @@ export default function Login() {
             </h2>
             <p className="text-gray-300 text-lg">
               {isLogin 
-                ? 'Sign in to access your AI car ad studio' 
+                ? 'Sign in to access your automotive sales platform' 
                 : 'Join DeepWork AI and start creating professional car advertisements'
               }
             </p>
