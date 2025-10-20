@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import PlatformLayout from '@/components/PlatformLayout';
+import VehicleForm from '@/components/VehicleForm';
 
 interface Project {
   id: string;
@@ -21,6 +22,12 @@ export default function ProjectsPage() {
   const { data: session } = authClient.useSession();
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [jobStatuses, setJobStatuses] = useState<Record<string, string>>({});
+  
+  // Vehicle form state
+  const [showVehicleForm, setShowVehicleForm] = useState<boolean>(false);
+  const [vehicleData, setVehicleData] = useState<any>(null);
+  const [isSavingVehicle, setIsSavingVehicle] = useState<boolean>(false);
 
   // Load projects from database
   useEffect(() => {
@@ -35,6 +42,17 @@ export default function ProjectsPage() {
       if (response.ok) {
         const data = await response.json();
         setProjects(data.projects || []);
+        // fetch job status per project (best-effort)
+        (data.projects || []).forEach(async (p: Project) => {
+          try {
+            const jr = await fetch(`/api/jobs?projectId=${p.id}`);
+            if (jr.ok) {
+              const j = await jr.json();
+              const latest = (j.jobs || [])[0];
+              setJobStatuses(prev => ({ ...prev, [p.id]: latest?.status || 'idle' }));
+            }
+          } catch {}
+        });
       } else {
         console.error('Failed to load projects from database');
       }
@@ -78,6 +96,35 @@ export default function ProjectsPage() {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  // Handle vehicle data save
+  const handleVehicleSave = async (vehicleFormData: any) => {
+    setIsSavingVehicle(true);
+    try {
+      const response = await fetch('/api/vehicles', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(vehicleFormData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save vehicle data');
+      }
+
+      const result = await response.json();
+      setVehicleData(result.vehicle);
+      setShowVehicleForm(false);
+      console.log('Vehicle data saved:', result.vehicle);
+    } catch (error) {
+      console.error('Error saving vehicle data:', error);
+      alert('Failed to save vehicle data. Please try again.');
+    } finally {
+      setIsSavingVehicle(false);
+    }
   };
 
   return (
@@ -204,6 +251,26 @@ export default function ProjectsPage() {
                   {/* Action Buttons */}
                   <div className="flex gap-3 pt-3">
                     <button
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        try {
+                          const r = await fetch('/api/publish', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ projectId: project.id, website: true, social: false })
+                          });
+                          if (r.ok) {
+                            setJobStatuses(prev => ({ ...prev, [project.id]: 'queued' }));
+                          } else {
+                            console.error('Publish enqueue failed');
+                          }
+                        } catch (err) { console.error(err); }
+                      }}
+                      className="px-4 py-2.5 bg-[#1F1F1F] hover:bg-[#2F2F2F] text-white text-sm font-bold rounded-lg transition-all hover:-translate-y-0.5"
+                    >
+                      Publish now
+                    </button>
+                    <button
                       onClick={(e) => {
                         e.stopPropagation();
                         if (project.generatedImageUrl) {
@@ -232,6 +299,7 @@ export default function ProjectsPage() {
                       🗑️
                     </button>
                   </div>
+                  <div className="pt-2 text-xs text-gray-400">Status: {jobStatuses[project.id] || 'idle'}</div>
                 </div>
               </div>
             ))}
@@ -287,6 +355,56 @@ export default function ProjectsPage() {
                   </div>
                 </div>
 
+                {/* Vehicle Details Section */}
+                <div className="mt-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-[#f1f5f9]">Vehicle Details</h3>
+                    <button
+                      onClick={() => setShowVehicleForm(true)}
+                      className="px-4 py-2 bg-[#38bdf8] text-[#1e293b] rounded-lg hover:bg-[#0ea5e9] transition-colors text-sm font-semibold"
+                    >
+                      {vehicleData ? 'Edit Details' : 'Add Details'}
+                    </button>
+                  </div>
+                  
+                  {vehicleData ? (
+                    <div className="bg-[#1e293b] rounded-lg p-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-[#94a3b8] mb-1">Vehicle</p>
+                          <p className="font-semibold text-[#f1f5f9]">
+                            {vehicleData.year} {vehicleData.make} {vehicleData.model}
+                            {vehicleData.trim && ` ${vehicleData.trim}`}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-[#94a3b8] mb-1">Price</p>
+                          <p className="font-semibold text-[#38bdf8]">
+                            {vehicleData.price ? `$${vehicleData.price.toLocaleString()}` : 'Not set'}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-[#94a3b8] mb-1">Stock Number</p>
+                          <p className="font-semibold text-[#f1f5f9]">
+                            {vehicleData.stockNumber || 'Not set'}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-[#94a3b8] mb-1">Mileage</p>
+                          <p className="font-semibold text-[#f1f5f9]">
+                            {vehicleData.mileage ? `${vehicleData.mileage.toLocaleString()} mi` : 'Not set'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-[#1e293b] rounded-lg p-4 text-center">
+                      <p className="text-[#94a3b8] text-sm mb-2">No vehicle details added</p>
+                      <p className="text-[#64748b] text-xs">Add details for better publishing results</p>
+                    </div>
+                  )}
+                </div>
+
                 {/* Project Details */}
                 <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="bg-[#1e293b] rounded-lg p-4">
@@ -304,7 +422,7 @@ export default function ProjectsPage() {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-4 mt-6">
+                <div className="flex flex-col sm:flex-row gap-4 mt-6">
                   {selectedProject.generatedImageUrl && (
                     <a
                       href={selectedProject.generatedImageUrl}
@@ -316,6 +434,41 @@ export default function ProjectsPage() {
                     </a>
                   )}
                   <button
+                    onClick={async () => {
+                      try {
+                        const response = await fetch('/api/publish', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            projectId: selectedProject.id,
+                            website: true,
+                            social: false,
+                            socialPlatforms: [],
+                          })
+                        });
+                        if (response.ok) {
+                          alert('Publishing job queued! Check status in a few moments.');
+                          // Refresh job status
+                          const jr = await fetch(`/api/jobs?projectId=${selectedProject.id}`);
+                          if (jr.ok) {
+                            const j = await jr.json();
+                            const latest = (j.jobs || [])[0];
+                            setJobStatuses(prev => ({ ...prev, [selectedProject.id]: latest?.status || 'queued' }));
+                          }
+                        } else {
+                          alert('Failed to queue publishing job. Please try again.');
+                        }
+                      } catch (error) {
+                        console.error('Publish error:', error);
+                        alert('Failed to queue publishing job. Please try again.');
+                      }
+                    }}
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-[#10b981] to-[#059669] hover:from-[#059669] hover:to-[#047857] text-white 
+                      font-semibold rounded-lg transition-colors text-center"
+                  >
+                    🚀 Publish Now
+                  </button>
+                  <button
                     onClick={() => deleteProject(selectedProject.id)}
                     className="px-6 py-3 bg-[#ef4444] hover:bg-[#dc2626] text-white 
                       font-semibold rounded-lg transition-colors"
@@ -323,6 +476,34 @@ export default function ProjectsPage() {
                     🗑️ Delete
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Vehicle Form Modal */}
+        {showVehicleForm && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <div className="bg-[#0A0A0A] border border-[#DC2626]/20 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-white">Vehicle Details</h2>
+                  <button
+                    onClick={() => setShowVehicleForm(false)}
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                
+                <VehicleForm
+                  initialData={vehicleData}
+                  onSave={handleVehicleSave}
+                  onCancel={() => setShowVehicleForm(false)}
+                  isLoading={isSavingVehicle}
+                />
               </div>
             </div>
           </div>

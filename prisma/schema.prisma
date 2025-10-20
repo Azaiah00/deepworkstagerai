@@ -32,6 +32,8 @@ model User {
   integrations    Integration[]
   analyticsLogs   AnalyticsLog[]
   subscription    Subscription?
+  jobs            Job[]
+  vehicles        Vehicle[]
 
   @@map("user")
 }
@@ -138,6 +140,10 @@ model StagingProject {
   postedToWebsite Boolean @default(false)
   postedToSocial  Boolean @default(false)
 
+  // Optional vehicle metadata link
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id])
+  vehicleId String?
+
   // Metadata
   tags  String[] @default([])
   notes String?
@@ -148,6 +154,56 @@ model StagingProject {
   @@index([userId])
   @@index([status])
   @@index([createdAt])
+}
+
+// ============================================================================
+// VEHICLE METADATA (Populate listings accurately)
+// ============================================================================
+
+model Vehicle {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Identification
+  vin         String? @unique
+  stockNumber String?
+
+  // Basic details
+  year         Int?
+  make         String?
+  model        String?
+  trim         String?
+  bodyStyle    String?
+  drivetrain   String?
+  transmission String?
+  engine       String?
+  fuelType     String?
+
+  // Appearance
+  exteriorColor String?
+  interiorColor String?
+
+  // Pricing & odometer
+  price   Float?
+  msrp    Float?
+  mileage Int?
+
+  // Media & features
+  photos   Json @default("[]")
+  features Json @default("[]")
+
+  // URLs
+  vdpUrl String?
+
+  // Link back to staging
+  stagingProjects StagingProject[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([make, model, year])
 }
 
 // ============================================================================
@@ -270,4 +326,30 @@ model Subscription {
 
   @@index([userId])
   @@index([status])
+}
+
+// ============================================================================
+// BACKGROUND JOBS (Auto-posting, Webhooks, etc.)
+// ============================================================================
+
+model Job {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // job type and payload
+  type    String // "website_publish", "social_publish"
+  payload Json // includes projectId, platform list, caption, etc.
+
+  // execution state
+  status    String   @default("queued") // "queued", "running", "completed", "failed"
+  attempts  Int      @default(0)
+  runAt     DateTime @default(now())
+  lastError String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status, runAt])
 }

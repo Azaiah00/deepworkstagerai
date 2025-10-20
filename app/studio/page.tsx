@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import PlatformLayout from '@/components/PlatformLayout';
+import VehicleForm from '@/components/VehicleForm';
 
 export default function Studio() {
   const router = useRouter();
@@ -20,6 +21,18 @@ export default function Studio() {
   const [customPrompt, setCustomPrompt] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  // Auto-publish toggles
+  const [autoPublishWebsite, setAutoPublishWebsite] = useState<boolean>(true);
+  const [autoPostSocial, setAutoPostSocial] = useState<boolean>(false);
+  
+  // Vehicle form state
+  const [showVehicleForm, setShowVehicleForm] = useState<boolean>(false);
+  const [vehicleData, setVehicleData] = useState<any>(null);
+  const [isSavingVehicle, setIsSavingVehicle] = useState<boolean>(false);
+  
+  // Auto-publish state
+  const [showPublishPrompt, setShowPublishPrompt] = useState<boolean>(false);
+  const [pendingProjectId, setPendingProjectId] = useState<string | null>(null);
 
   // Available scenery options
   const sceneryOptions = [
@@ -52,6 +65,74 @@ export default function Studio() {
         setLogoImage(event.target?.result as string);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  // Handle vehicle data save
+  const handleVehicleSave = async (vehicleFormData: any) => {
+    setIsSavingVehicle(true);
+    try {
+      const response = await fetch('/api/vehicles', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(vehicleFormData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save vehicle data');
+      }
+
+      const result = await response.json();
+      setVehicleData(result.vehicle);
+      setShowVehicleForm(false);
+      console.log('Vehicle data saved:', result.vehicle);
+
+      // Link vehicle to pending project if exists
+      if (pendingProjectId && result.vehicle?.id) {
+        await fetch(`/api/projects/${pendingProjectId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ vehicleId: result.vehicle.id }),
+        });
+      }
+
+      // Trigger auto-publish if enabled and we have a pending project
+      if (pendingProjectId && (autoPublishWebsite || autoPostSocial)) {
+        await handlePublish(pendingProjectId);
+        setPendingProjectId(null);
+      }
+      
+      setShowPublishPrompt(false);
+    } catch (error) {
+      console.error('Error saving vehicle data:', error);
+      alert('Failed to save vehicle data. Please try again.');
+    } finally {
+      setIsSavingVehicle(false);
+    }
+  };
+
+  // Handle publishing
+  const handlePublish = async (projectId: string) => {
+    try {
+      const response = await fetch('/api/publish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId,
+          website: autoPublishWebsite,
+          social: autoPostSocial,
+          socialPlatforms: [],
+        })
+      });
+      if (response.ok) {
+        console.log('Publishing job queued successfully');
+      }
+    } catch (error) {
+      console.error('Failed to enqueue publish job:', error);
     }
   };
 
@@ -120,7 +201,8 @@ export default function Studio() {
               scenery: selectedScenery,
               customPrompt: customPrompt.trim() || null,
               generatedImageUrl: result.data.generatedImage,
-              status: 'completed'
+              status: 'completed',
+              vehicleId: vehicleData?.id || null
             }),
           });
 
@@ -130,6 +212,14 @@ export default function Studio() {
             alert('Warning: Project generated but not saved to your account. Please ensure you are logged in.');
           } else {
             console.log('Project saved to database successfully');
+            const saved = await saveResponse.json().catch(() => ({}));
+            const projectId = saved?.project?.id;
+            
+            // Show prompt to add vehicle details if auto-publish is enabled
+            if (projectId && (autoPublishWebsite || autoPostSocial)) {
+              setPendingProjectId(projectId);
+              setShowPublishPrompt(true);
+            }
           }
         } catch (saveError) {
           console.error('Error saving project to database:', saveError);
@@ -172,48 +262,90 @@ export default function Studio() {
   }
 
   return (
-    <div className="min-h-screen">
-      {/* Navigation Header with Premium Styling */}
-      <div className="bg-gradient-to-r from-[#0A0A0A] via-[#1F1F1F] to-[#0A0A0A] border-b border-[#DC2626]/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            <Link 
-              href="/"
-              className="text-3xl font-bold deepwork-gradient hover:scale-105 transition-transform display-font"
-            >
-              DeepWork AI
-            </Link>
-            <div className="flex items-center gap-4">
-              <Link
-                href="/dashboard"
-                className="px-6 py-3 bg-gradient-to-r from-[#DC2626] to-[#B91C1C] text-white 
-                  font-semibold rounded-full transition-all hover:shadow-lg hover:shadow-red-500/50 
-                  hover:-translate-y-0.5 flex items-center gap-2"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-                <span>Dashboard</span>
-              </Link>
-              <Link
-                href="/"
-                className="px-6 py-3 bg-[#1F1F1F] hover:bg-[#2a2a2a] text-white 
-                  font-semibold rounded-full transition-all hover:shadow-lg 
-                  hover:-translate-y-0.5 flex items-center gap-2"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-                <span>Home</span>
-              </Link>
-            </div>
+    <PlatformLayout title="AI Studio" subtitle="Create stunning car advertisements with AI">
+      {/* Auto‑publish toggles */}
+      <div className="mb-6">
+        <div className="bg-gradient-to-r from-[#0A0A0A] to-[#1F1F1F] border border-[#DC2626]/20 rounded-xl p-4">
+          <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+            <svg className="w-5 h-5 text-[#DC2626]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            Auto-Publish Settings
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <label className="flex items-center gap-3 p-3 rounded-lg bg-[#0A0A0A]/50 border border-gray-700 hover:border-[#DC2626]/30 transition-colors cursor-pointer">
+              <input 
+                type="checkbox" 
+                checked={autoPublishWebsite} 
+                onChange={(e) => setAutoPublishWebsite(e.target.checked)}
+                className="w-4 h-4 text-[#DC2626] bg-gray-700 border-gray-600 rounded focus:ring-[#DC2626]"
+              />
+              <div className="flex-1">
+                <span className="text-sm text-white font-medium block">Auto-publish to website</span>
+                <span className="text-xs text-gray-400">After adding vehicle details</span>
+              </div>
+            </label>
+            <label className="flex items-center gap-3 p-3 rounded-lg bg-[#0A0A0A]/50 border border-gray-700 hover:border-[#DC2626]/30 transition-colors cursor-pointer">
+              <input 
+                type="checkbox" 
+                checked={autoPostSocial} 
+                onChange={(e) => setAutoPostSocial(e.target.checked)}
+                className="w-4 h-4 text-[#DC2626] bg-gray-700 border-gray-600 rounded focus:ring-[#DC2626]"
+              />
+              <div className="flex-1">
+                <span className="text-sm text-white font-medium block">Auto-post to social media</span>
+                <span className="text-xs text-gray-400">Share to connected accounts</span>
+              </div>
+            </label>
           </div>
         </div>
       </div>
 
+      {/* Vehicle Details Section */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-white">Vehicle Details</h3>
+          {!vehicleData && (
+            <button
+              onClick={() => setShowVehicleForm(true)}
+              className="px-4 py-2 bg-[#DC2626] text-white rounded-lg hover:bg-[#B91C1C] transition-colors text-sm"
+            >
+              Add Vehicle Details
+            </button>
+          )}
+        </div>
+        
+        {vehicleData ? (
+          <div className="p-4 bg-[#0A0A0A] border border-[#DC2626]/20 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-white font-semibold">
+                  {vehicleData.year} {vehicleData.make} {vehicleData.model}
+                  {vehicleData.trim && ` ${vehicleData.trim}`}
+                </p>
+                <p className="text-gray-400 text-sm">
+                  {vehicleData.stockNumber && `Stock: ${vehicleData.stockNumber}`}
+                  {vehicleData.price && ` • $${vehicleData.price.toLocaleString()}`}
+                </p>
+              </div>
+              <button
+                onClick={() => setShowVehicleForm(true)}
+                className="px-3 py-1 bg-[#1F1F1F] text-gray-300 rounded hover:bg-[#2F2F2F] transition-colors text-sm"
+              >
+                Edit
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="p-4 bg-[#0A0A0A] border border-gray-600 rounded-lg text-center">
+            <p className="text-gray-400 text-sm mb-2">Add vehicle details for better publishing results</p>
+            <p className="text-gray-500 text-xs">Include VIN, pricing, features, and specifications</p>
+          </div>
+        )}
+      </div>
+
       {/* Main Studio Form */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="glass-card premium-card rounded-3xl p-6 md:p-8 border border-[#DC2626]/20">
+      <div className="glass-card premium-card rounded-3xl p-6 md:p-8 border border-[#DC2626]/20">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Project Name Input */}
             <div>
@@ -411,12 +543,14 @@ export default function Studio() {
                 {/* Car Image Preview */}
                 <div className="flex items-center gap-4">
                   <div className="relative w-20 h-20 bg-[#334155] rounded-lg overflow-hidden flex-shrink-0">
-                    <Image
-                      src={carImage}
-                      alt="Car preview"
-                      fill
-                      className="object-cover"
-                    />
+                    {carImage && (
+                      <Image
+                        src={carImage}
+                        alt="Car preview"
+                        fill
+                        className="object-cover"
+                      />
+                    )}
                   </div>
                   <div>
                     <p className="text-sm font-medium text-[#f1f5f9]">Car Image</p>
@@ -427,14 +561,16 @@ export default function Studio() {
                 {/* Logo Image Preview */}
                 {logoImage ? (
                   <div className="flex items-center gap-4">
-                    <div className="relative w-20 h-20 bg-[#334155] rounded-lg overflow-hidden flex-shrink-0">
+                  <div className="relative w-20 h-20 bg-[#334155] rounded-lg overflow-hidden flex-shrink-0">
+                    {logoImage && (
                       <Image
                         src={logoImage}
                         alt="Logo preview"
                         fill
                         className="object-cover"
                       />
-                    </div>
+                    )}
+                  </div>
                     <div>
                       <p className="text-sm font-medium text-[#f1f5f9]">Logo Image</p>
                       <p className="text-xs text-[#38bdf8]">✓ Uploaded</p>
@@ -563,12 +699,11 @@ export default function Studio() {
             ) : null}
           </div>
         </div>
-      </div>
 
-      {/* Display Uploaded Images with Premium Styling */}
-      {(carImage || logoImage) && (
-        <div className="mt-16 max-w-5xl mx-auto w-full reveal">
-          <div className="glass-card premium-card rounded-3xl p-8 border border-[#DC2626]/20">
+        {/* Display Uploaded Images with Premium Styling */}
+        {(carImage || logoImage) && (
+          <div className="mt-16 max-w-5xl mx-auto w-full reveal">
+            <div className="glass-card premium-card rounded-3xl p-8 border border-[#DC2626]/20">
             <h2 className="text-3xl font-bold text-center mb-8 deepwork-gradient display-font">
               Your Uploads
             </h2>
@@ -577,12 +712,14 @@ export default function Studio() {
                 <div className="text-center">
                   <h3 className="text-xl font-semibold mb-4 text-white">Car Image</h3>
                   <div className="relative w-full h-64 bg-[#1F1F1F] rounded-2xl overflow-hidden border-2 border-[#DC2626]/30">
-                    <Image
-                      src={carImage}
-                      alt="Uploaded car"
-                      fill
-                      className="object-cover"
-                    />
+                    {carImage && (
+                      <Image
+                        src={carImage}
+                        alt="Uploaded car"
+                        fill
+                        className="object-cover"
+                      />
+                    )}
                   </div>
                 </div>
               )}
@@ -590,12 +727,14 @@ export default function Studio() {
                 <div className="text-center">
                   <h3 className="text-xl font-semibold mb-4 text-white">Logo Image</h3>
                   <div className="relative w-full h-64 bg-[#1F1F1F] rounded-2xl overflow-hidden border-2 border-[#38bdf8]/30">
-                    <Image
-                      src={logoImage}
-                      alt="Uploaded logo"
-                      fill
-                      className="object-contain p-4"
-                    />
+                    {logoImage && (
+                      <Image
+                        src={logoImage}
+                        alt="Uploaded logo"
+                        fill
+                        className="object-contain p-4"
+                      />
+                    )}
                   </div>
                 </div>
               )}
@@ -621,12 +760,14 @@ export default function Studio() {
             {/* Generated Image Display */}
             <div className="relative w-full max-w-4xl mx-auto mb-8">
               <div className="relative w-full h-96 bg-[#1F1F1F] rounded-2xl overflow-hidden border-2 border-[#DC2626]/30 shadow-2xl">
-                <Image
-                  src={generatedImage}
-                  alt="Generated car advertisement"
-                  fill
-                  className="object-cover"
-                />
+                {generatedImage && (
+                  <Image
+                    src={generatedImage}
+                    alt="Generated car advertisement"
+                    fill
+                    className="object-cover"
+                  />
+                )}
               </div>
             </div>
 
@@ -646,21 +787,24 @@ export default function Studio() {
               <div className="text-center">
                 <h3 className="text-xl font-semibold mb-4 text-white">After (AI Enhanced)</h3>
                 <div className="relative w-full h-64 bg-[#1F1F1F] rounded-2xl overflow-hidden border-2 border-[#DC2626]/30">
-                  <Image
-                    src={generatedImage}
-                    alt="AI enhanced car"
-                    fill
-                    className="object-cover"
-                  />
+                  {generatedImage && (
+                    <Image
+                      src={generatedImage}
+                      alt="AI enhanced car"
+                      fill
+                      className="object-cover"
+                    />
+                  )}
                 </div>
               </div>
             </div>
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <a
-                href={generatedImage}
-                download={`${projectName.trim()}-ai-car-ad.jpg`}
+              {generatedImage && (
+                <a
+                  href={generatedImage}
+                  download={`${projectName.trim()}-ai-car-ad.jpg`}
                 className="px-8 py-4 bg-gradient-to-r from-[#DC2626] to-[#B91C1C] text-white 
                   font-bold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-red-500/50 
                   hover:scale-105 active:scale-95 flex items-center gap-3"
@@ -669,7 +813,8 @@ export default function Studio() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 Download Image
-              </a>
+                </a>
+              )}
               
               <button
                 onClick={() => {
@@ -694,6 +839,108 @@ export default function Studio() {
           </div>
         </div>
       )}
-    </div>
+
+      {/* Publish Prompt Modal */}
+      {showPublishPrompt && (
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+          <div className="bg-gradient-to-br from-[#0A0A0A] to-[#1F1F1F] border-2 border-[#DC2626]/30 rounded-2xl max-w-lg w-full p-8 shadow-2xl">
+            <div className="text-center">
+              {/* Icon */}
+              <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-[#DC2626] to-[#B91C1C] rounded-full flex items-center justify-center">
+                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+
+              {/* Title */}
+              <h2 className="text-2xl font-bold text-white mb-3">Add Vehicle Details?</h2>
+              
+              {/* Description */}
+              <p className="text-gray-300 mb-2">
+                Add vehicle details for better listings with complete information
+              </p>
+              <p className="text-gray-400 text-sm mb-8">
+                VIN, pricing, features, specifications, etc.
+              </p>
+
+              {/* Buttons */}
+              <div className="space-y-3">
+                <button
+                  onClick={() => {
+                    setShowPublishPrompt(false);
+                    setShowVehicleForm(true);
+                  }}
+                  className="w-full px-6 py-4 bg-gradient-to-r from-[#DC2626] to-[#B91C1C] text-white 
+                    font-bold rounded-lg transition-all hover:shadow-lg hover:shadow-red-500/50 
+                    hover:scale-105 flex items-center justify-center gap-3"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  Yes, Add Details First
+                </button>
+
+                <button
+                  onClick={async () => {
+                    setShowPublishPrompt(false);
+                    if (pendingProjectId) {
+                      await handlePublish(pendingProjectId);
+                      setPendingProjectId(null);
+                    }
+                  }}
+                  className="w-full px-6 py-4 bg-[#1F1F1F] hover:bg-[#2F2F2F] text-white 
+                    font-semibold rounded-lg transition-all border border-gray-600 hover:border-gray-500
+                    flex items-center justify-center gap-3"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  Publish Without Details
+                </button>
+
+                <button
+                  onClick={() => {
+                    setShowPublishPrompt(false);
+                    setPendingProjectId(null);
+                  }}
+                  className="w-full px-6 py-3 text-gray-400 hover:text-white 
+                    font-medium rounded-lg transition-colors"
+                >
+                  Maybe Later
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Vehicle Form Modal */}
+      {showVehicleForm && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-[#0A0A0A] border border-[#DC2626]/20 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-white">Vehicle Details</h2>
+                <button
+                  onClick={() => setShowVehicleForm(false)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <VehicleForm
+                initialData={vehicleData}
+                onSave={handleVehicleSave}
+                onCancel={() => setShowVehicleForm(false)}
+                isLoading={isSavingVehicle}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    </PlatformLayout>
   );
 }

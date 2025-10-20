@@ -59,3 +59,30 @@ export async function DELETE(
   }
 }
 
+// PATCH - Update a specific project (e.g., link vehicleId)
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const { id: projectId } = await params;
+    const body = await request.json();
+
+    const existing = await prisma.stagingProject.findFirst({ where: { id: projectId, userId: session.user.id } });
+    if (!existing) return NextResponse.json({ error: 'Project not found or unauthorized' }, { status: 404 });
+
+    const data: any = {};
+    if (body.vehicleId !== undefined) data.vehicleId = body.vehicleId;
+    if (body.status !== undefined) data.status = body.status;
+
+    const updated = await prisma.stagingProject.update({ where: { id: projectId }, data });
+    return NextResponse.json({ project: updated });
+  } catch (e) {
+    console.error('Error updating project:', e);
+    return NextResponse.json({ error: 'Failed to update project' }, { status: 500 });
+  }
+}
+
