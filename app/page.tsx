@@ -71,7 +71,7 @@ export default function Home() {
                 <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-                <span>Start Free Trial</span>
+                <span>Get Started</span>
               </Link>
               <Link
                 href="#features"
@@ -87,7 +87,7 @@ export default function Home() {
               </Link>
             </div>
             <p className="text-xs sm:text-sm text-gray-500 mt-4 sm:mt-6 px-4">
-              No credit card required • Set up in 5 minutes • Cancel anytime
+              Set up in 5 minutes • Start selling smarter today
             </p>
           </div>
         </div>
@@ -303,7 +303,7 @@ export default function Home() {
                 <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-                <span>Start Your Free Trial</span>
+                <span>Get Started</span>
               </Link>
               <Link
                 href="#features"
@@ -324,19 +324,19 @@ export default function Home() {
                 <svg className="w-5 h-5 text-[#10B981]" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                <span>14-Day Free Trial</span>
+                <span>Instant Access</span>
               </div>
               <div className="flex items-center gap-2">
                 <svg className="w-5 h-5 text-[#10B981]" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                <span>No Credit Card Required</span>
+                <span>No Setup Fees</span>
               </div>
               <div className="flex items-center gap-2">
                 <svg className="w-5 h-5 text-[#10B981]" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                <span>Cancel Anytime</span>
+                <span>24/7 Support</span>
               </div>
               <div className="flex items-center gap-2">
                 <svg className="w-5 h-5 text-[#10B981]" fill="currentColor" viewBox="0 0 20 20">
