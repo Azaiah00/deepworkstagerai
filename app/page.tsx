@@ -12,7 +12,7 @@ export default function Home() {
               href="/"
               className="text-xl sm:text-2xl md:text-3xl font-bold deepwork-gradient hover:scale-105 transition-transform display-font whitespace-nowrap"
             >
-              DeepWork AI
+              LegacyDealer AI
             </Link>
             <div className="flex items-center gap-2 sm:gap-4">
               <Link
@@ -49,7 +49,7 @@ export default function Home() {
           <div className="text-center">
             <div className="inline-block mb-4 sm:mb-6">
               <span className="px-4 py-2 sm:px-6 bg-gradient-to-r from-[#DC2626]/20 to-[#38bdf8]/20 border border-[#DC2626]/50 rounded-full text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
-                All-in-One Automotive Sales Platform
+                All-in-One Automotive Marketing Platform
               </span>
             </div>
             <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black mb-6 sm:mb-8 deepwork-gradient display-font leading-tight px-2">
